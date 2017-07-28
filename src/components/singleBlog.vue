@@ -1,7 +1,7 @@
 <template>
     <div id="single-blog">
         <h1>{{blog.title}}</h1>
-        <p class="author"><span>Author:</span> {{blog.author}}</p>
+        <p class="author"><span>Author:</span> {{blog.blogAuthor}}</p>
         <ul class="category">
             <p>Categories: </p>
             <li v-for="category in blog.categories">{{category}}</li>
@@ -17,6 +17,11 @@
 
 <script>
 export default {
+    props:{
+        author: {
+            type: Object
+        }
+    },
     data(){
         return{
             id: this.$route.params.id,

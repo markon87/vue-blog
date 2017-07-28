@@ -18,15 +18,15 @@
             </div>
             <label>Image URL: </label>
             <input type="text" v-model.lazy="blog.image" required />
-            <label>Author:</label>
+            <!-- <label>Author:</label>
             <select v-model="blog.author">
                 <option v-for="author in authors">{{ author }}</option>
-            </select>
+            </select> -->
             <button class="btn add-new" v-on:click.prevent="post">Add Blog</button>
         </form>
         <div v-if="submited">
             <h3>Thanks for adding your post</h3>
-            <router-link to="/" exact class="back btn">Go Back</router-link>
+            <router-link to="/vue-blog" exact class="back btn">Go Back</router-link>
         </div>
         <div id="preview">
             <h3>Preview Blog</h3>
@@ -40,13 +40,18 @@
             <ul>
                 <li v-for="category in blog.categories">{{ category }}</li>
             </ul>
-            <p>Author: {{blog.author}}</p>
+            <p class="author">Author: <span>{{author.username}}</span></p>
         </div>
     </div>
 </template>
 
 <script>
 export default {
+    props:{
+        author: {
+            type: Object
+        }
+    },
     components: {
 
     },
@@ -56,17 +61,21 @@ export default {
                 title: "",
                 content: "",
                 categories: [],
-                author: "",
+                blogAuthor: "",
                 image: ""
             },
-            authors: ['The Net Ninja', 'The Angular Avenger', 'The Vue Vindicator'],
+            // authors: ['The Net Ninja', 'The Angular Avenger', 'The Vue Vindicator'],
             submited: false
         }
     },
     methods: {
         post: function(){
-            if(this.blog.title=='' || this.blog.content=='' || this.blog.categories=='' || this.blog.author=='' || this.blog.image==''){
-                alert("All fields are required.")
+            this.blog.blogAuthor = this.author.username;
+            console.log(this.blog.blogAuthor);
+            if(this.blog.blogAuthor==''){
+                alert("Please LogIn before you post new blog. \n\nHint! \nuser:TheVueGuest \npass:thevueguest123");
+            }else if(this.blog.title=='' || this.blog.content=='' || this.blog.categories=='' || this.blog.image==''){
+                alert("All fields are required.");
             }else{
                 this.$http.post('https://vue-blog-2c24d.firebaseio.com/posts.json', this.blog).then(function(data){
                     this.submited = true;
@@ -117,13 +126,15 @@ h3{
     float: none;
 }
 .add-new.btn{
-    margin: 0 10px;
     border: none;
-    float: left;
     cursor: pointer;
 }
 select{
     height: 37px;
     float: left;
+}
+.author span{
+    color: #41b883;
+    font-weight: bold;
 }
 </style>

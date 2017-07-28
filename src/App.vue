@@ -1,7 +1,7 @@
 <template>
   <div>
-    <app-header></app-header>
-    <router-view></router-view>
+    <app-header v-bind:author="author" v-bind:isActive="isActive" v-bind:logged="logged" v-on:login="updateAuthor" v-on:loginOut="logOut" v-on:hideLogin="hideLogin"></app-header>
+    <router-view v-bind:author="author" v-bind:isActive="isActive" v-bind:logged="logged"></router-view>
   </div>
 </template>
 
@@ -19,7 +19,52 @@ export default {
   },
   data() {
     return {
-      
+      author:{
+          username: '',
+          password: ''
+      },
+      isActive: false,
+      logged: false
+    }
+  },
+  methods: {
+    updateAuthor: function(){
+      // Creating new author
+      // this.$http.post('https://vue-blog-authors.firebaseio.com/authors.json', this.author).then(function(data){
+      // });
+
+      if(this.author.username=='' || this.author.username==''){
+        alert("All fields are required.")
+      }else{
+          this.$http.get('https://vue-blog-authors.firebaseio.com/authors.json').then(function(data){
+              return data.json();
+          }).then(function(data){
+              var notFound = true;
+              for(let key in data){
+                  data[key].id = key;
+                  // console.log(data[key].username.match(this.author.username));
+                  if(data[key].username === this.author.username && data[key].password === this.author.password){
+                      this.author.username = data[key].username;
+                      this.author.password = data[key].password;
+                      this.isActive = false;
+                      this.logged = true;
+                      notFound = false;
+                  }
+              }
+              if(notFound == true){
+                alert('Username or password are not found.');
+              }
+          });
+      }
+    },
+    logOut: function(){
+      this.logged = false;
+      this.isActive = false;
+      this.author.username = '';
+      this.author.password = '';
+    },
+    hideLogin: function(){
+      this.isActive = !this.isActive;
     }
   }
 }
